@@ -88,7 +88,7 @@
                     <div class="email">Address 2</div>
                     <input
                         class="frame-child7"
-                        name="address"
+                        name="address1"
                         placeholder="kuleshwor, kathmandu"
                         type="text"
                     />
@@ -125,8 +125,8 @@
                         <option value="3">Khalti</option>
                         <option value="4">Bank Transfer</option>
                     </select>
-                    <button class="place-order-wrapper" type="submit" form="orderForm" name="placeOrder">
-                       <div class="place-order">Place Order</div>
+                    <button class="place-order-wrapper" type="submit" form="orderForm" id="placeOrder">
+                             <div class="place-order">Place Order</div>
                     </button>
                     <input
                         class="frame-child13"
@@ -212,15 +212,20 @@
         </footer>
         
     </div>
-    <script>
-    // Function to show a popup message
-    function showMessage() {
-        alert("Your order has been placed!");
-    }
+<script>
+   document.getElementById("placeOrder").addEventListener("click", function(event) {
+    event.preventDefault();
 
-    // Add a click event listener to the "Place Order" button
-    document.getElementById("placeOrder").addEventListener("click", showMessage);
+    // Display alert
+    alert("Your order has been placed!");
+    
+    // Redirect to index.html after form submission
+    window.location.href = "index.html";
 
+    // Submit the form
+    document.getElementById("orderForm").submit();
+
+});
 
 </script>
 </body>

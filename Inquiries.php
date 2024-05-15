@@ -248,11 +248,11 @@
                 <th>Action</th>
             </tr>
             <?php
-            // Database connection parameters
-            $servername = "localhost"; // Change this if your database is on a different server
-            $username = "root"; // Your MySQL username
-            $password = ""; // Your MySQL password
-            $dbname = "addproducts"; // Name of your database
+           
+            $servername = "localhost"; 
+            $username = "root"; 
+            $password = ""; 
+            $dbname = "addproducts"; 
 
             // Create connection
             $conn = new mysqli($servername, $username, $password, $dbname);
@@ -349,7 +349,6 @@
             <h2>Prefer another way to find us?</h2>
             <p class="contact-info">+977 9801022637, +977 01-5970120, +977 9801000078</p>
             <p class="contact-info">info@heraldcollege.edu.np</p>
-            <!-- You can embed a Google Map here -->
     </div>
   </body>
 </html>

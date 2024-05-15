@@ -89,7 +89,7 @@
           <a href="#" class="dropbtn">Product</a>
           <div class="dropdown-content">
             <a href="add_item.php">Add Product</a>
-            <a href="view_products2.php">Edit Product</a>
+            <a href="view_petitemsadmin.php">Edit Product</a>
           </div>
         </li>
         <li><a href="orders.php">Orders</a></li>
