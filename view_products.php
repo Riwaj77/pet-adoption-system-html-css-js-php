@@ -31,6 +31,7 @@ $password = "";
 $dbname = "addproducts";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
+
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
@@ -45,15 +46,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         addToCart($_POST['product_id']);
     } elseif (isset($_POST['remove_from_cart'])) {
         removeFromCart($_POST['remove_product_id']);
+    } elseif (isset($_POST['proceed_payment'])) {
+        header("Location: payment.php");
+        exit();
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Product Listing</title>
     <style>
         body {
@@ -90,8 +94,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .card img {
-            max-width: 100%;
-            height: auto;
+            max-width: 40%;
+            height:40%;
             border-radius: 8px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -124,14 +128,70 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .buy-now-btn:hover {
             background-color: #45a049;
         }
+
+.search-form input[type="text"],
+        .search-form select,
+        .search-form button {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-form button {
+            background-color: #45a049;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        
     </style>
 </head>
 <body>
-    <h2>Our Pets</h2>
+    <h2>Petopia</h2>
+
+    <form class="search-form" method="GET" action="">
+            <input type="text" name="search" placeholder="Search for pets" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+            <select name="sort_by">
+                <option value="">-- Sort By --</option>
+                <option value="price_asc">Sort by Price: Low to High</option>
+                <option value="price_desc">Sort by Price: High to Low</option>
+                <option value="alpha_asc">Sort by Alphabet: A to Z</option>
+                <option value="alpha_desc">Sort by Alphabet: Z to A</option>
+            </select>
+            <button type="submit"><i class="fa fa-search"></i></button>
+        </form>
 
     <div class="container">
         <?php
-        // Display products and their images
+        // Modify your SQL query to include search functionality
+        $sql = "SELECT * FROM products";
+        
+        if (isset($_GET['search'])) {
+            $searchQuery = $_GET['search'];
+
+            $searchQuery = $conn->real_escape_string($searchQuery);
+
+            $sql .= " WHERE productName LIKE '%$searchQuery%' OR productDescription LIKE '%$searchQuery%'";
+        }
+
+        if (isset($_GET['sort_by'])) {
+            $sortBy = $_GET['sort_by'];
+        
+            if ($sortBy == "price_asc") {
+                $sql .= " ORDER BY price ASC";
+            } elseif ($sortBy == "price_desc") {
+                $sql .= " ORDER BY price DESC";
+            } elseif ($sortBy == "alpha_asc") {
+                $sql .= " ORDER BY productName ASC";
+            } elseif ($sortBy == "alpha_desc") {
+                $sql .= " ORDER BY productName DESC"; 
+        }
+    }
+
+        $result = mysqli_query($conn, $sql);
+
+        // Your existing product display loop
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<div class='card'>";
             echo "<h3>" . $row['productName'] . "</h3>";
@@ -142,17 +202,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<p>Pet Price: $" . $row['price'] . "</p>";
             echo "<p>Compare Price: $" . $row['comparePrice'] . "</p>";
             echo "<img src='http://localhost/pet-adoption-system-html-css-js-php/images/" . $row['image'] . "' alt='Product Image'>";
-            // Modify the button to include an onclick event passing the product name
-            echo "<button onclick='redirectToPayment(\"" . $row['productName'] . "\", " . $row['price'] . ")' class='adopt-btn'>Adopt Now!!!</button>";
-            echo "</div>";
-            
+            // Modify the button to include an onclick event
+           echo "<button onclick='redirectToPayment(\"" . $row['productName'] . "\", " . $row['price'] . ")' class='adopt-btn'>Adopt Now!!!</button>";            echo "</div>";
         }
         ?>
     </div>
+
     <script>
-        function redirectToPayment(productName, price) {
+      function redirectToPayment(productName, price) {
             // Redirect to payment.php with the product name and price as query parameters
             window.location.href = "payment.php?productName=" + encodeURIComponent(productName) + "&price=" + encodeURIComponent(price);
+        }
+
+        function sortProducts() {
+            var sortBy = document.getElementById("sort-by").value;
+            var currentUrl = window.location.href;
+            var url = new URL(currentUrl);
+            url.searchParams.set('sort', sortBy);
+            window.location.href = url.toString();
         }
     </script>
 </body>
